@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Form from "./Form";
 import UserList from "./UserList";
 
 function Home() {
   const [userList, setUserList] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+
   //   const userList = [
   //     {
   //       id: 1,
@@ -39,7 +40,7 @@ function Home() {
 
   function createUser(user) {
     const foundUser = userList.find((item) => {
-      return item.username === user.name;
+      return item.masv === user.masv;
     });
     if (foundUser) return alert("Tài khoản đã tồn tại");
 
@@ -71,13 +72,16 @@ function Home() {
 
   return (
     <div>
-      <h1 className="mt-2 text-center">Quản Lý User</h1>
+      {/* <h1 className="mt-2 text-center fs-1">Quản Lý Sinh Viên</h1> */}
+      {/* <div className="">
+        <input />
+      </div> */}
+      {/* <FilterSV /> */}
       <Form selectedUser={selectedUser} createUser={createUser} updateUser={updateUser} />
       <UserList getUpdateUser={getUpdateUser} deleteUser={deleteUser} users={userList} />
+      {/* <FilterSV /> */}
     </div>
   );
 }
-
-// Install ant design
 
 export default Home;

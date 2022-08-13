@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Input, Select, Button } from "antd";
+import { Card, Input, Button } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import styles from "./form.module.css";
 import { v4 as uuidv4 } from "uuid";
@@ -7,16 +7,14 @@ import * as yup from "yup";
 import isEmpty from "lodash.isempty";
 
 const userSchema = yup.object().shape({
-  username: yup.string().required("*Vui lòng nhập username"),
-  password: yup
-    .string()
-    .required("*Vui lòng nhập password")
-    .min(8, "*Nhập ít nhất 8 ký tự")
-    .max(16, "*Nhập tối đa 16 ký tự"),
+  masv: yup.string().required("*Vui lòng nhập mã sinh viên"),
   name: yup
     .string()
     .required("*Vui lòng nhập name")
-    .matches(/^[A-Za-z ]+$/g, "Họ tên phải nhập chữ"),
+    .matches(
+      /^[a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ ]+$/g,
+      "Họ tên phải nhập chữ"
+    ),
   email: yup
     .string()
     .required("*Vui lòng nhập email")
@@ -25,34 +23,27 @@ const userSchema = yup.object().shape({
     .string()
     .required("*Vui lòng nhập phone")
     .matches(/^[0-9]+$/g, "Số điện thoại phải nhập số"),
-  role: yup.string().required("*Vui lòng chọn mã loại người dùng"),
 });
 
 function Form(props) {
   const [user, setUser] = useState({
-    username: "",
-    password: "",
+    masv: "",
     name: "",
     email: "",
     phone: "",
-    role: "",
   });
 
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (!props.selectedUser) return;
-    if (props.selectedUser.id === user.id) return;
+    if (props.selectedUser.masv === user.masv) return;
 
     setUser(props.selectedUser);
   }, [props.selectedUser]); //eslint-disable-line
 
   function handleChange(e) {
     setUser({ ...user, [e.target.name]: e.target.value });
-  }
-
-  function handleSelect(name, val) {
-    setUser({ ...user, [name]: val });
   }
 
   async function handleSubmit(e) {
@@ -67,14 +58,12 @@ function Form(props) {
       props.createUser({ ...user, id: uuidv4() });
     }
 
-    setUser({
-      username: "",
-      password: "",
-      name: "",
-      email: "",
-      phone: "",
-      role: "",
-    });
+    resetForm();
+
+    errors.masv = "";
+    errors.name = "";
+    errors.phone = "";
+    errors.email = "";
   }
 
   // Validation
@@ -97,34 +86,34 @@ function Form(props) {
 
   function resetForm() {
     setUser({
-      username: "",
+      masv: "",
       password: "",
       name: "",
       email: "",
       phone: "",
-      role: "",
     });
   }
 
   return (
     <Card
-      title="Form Đăng ký"
+      title="Thông tin sinh viên"
       headStyle={{
         backgroundColor: "#34495e",
         color: "#ffffff",
+        fontSize: "22px",
       }}
     >
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formGroup}>
-          <label>Tài khoản</label>
+          <label>Mã SV</label>
           <Input
-            name="username"
-            value={user.username}
+            name="masv"
+            value={user.masv}
             onChange={handleChange}
             prefix={<UserOutlined />}
-            placeholder="Tài khoản"
+            placeholder="Mã Sinh Viên"
           />
-          <span style={{ color: "red" }}>{errors.username}</span>
+          <span style={{ color: "red" }}>{errors.masv}</span>
         </div>
 
         <div className={styles.formGroup}>
@@ -137,19 +126,6 @@ function Form(props) {
             placeholder="Họ tên"
           />
           <span style={{ color: "red" }}>{errors.name}</span>
-        </div>
-
-        <div className={styles.formGroup}>
-          <label>Mật khẩu</label>
-          <Input
-            name="password"
-            value={user.password}
-            onChange={handleChange}
-            prefix={<UserOutlined />}
-            type="password"
-            placeholder="Mật khẩu"
-          />
-          <span style={{ color: "red" }}>{errors.password}</span>
         </div>
 
         <div className={styles.formGroup}>
@@ -177,27 +153,16 @@ function Form(props) {
           <span style={{ color: "red" }}>{errors.email}</span>
         </div>
 
-        <div className={styles.formGroup}>
-          <label>Mã loại người dùng</label>
-          <Select
-            value={user.role}
-            onChange={(val) => {
-              handleSelect("role", val);
-            }}
-            className={styles.select}
-          >
-            <Select.Option value="khachHang">Khách hàng</Select.Option>
-            <Select.Option value="quanTri">Quản trị viên</Select.Option>
-          </Select>
-          <span style={{ color: "red" }}>{errors.role}</span>
-        </div>
-
         <div className={styles.btn}>
-          <Button htmlType="submit" type="primary">
-            Submit
-          </Button>
-          <Button onClick={resetForm} type="default">
-            Reset
+          <Button
+            className="btn btn-success"
+            htmlType="submit"
+            style={{
+              fontSize: 15,
+              paddingBottom: 28,
+            }}
+          >
+            Thêm sinh viên
           </Button>
         </div>
       </form>
